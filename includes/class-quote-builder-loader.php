@@ -101,7 +101,8 @@ class Quote_Builder_Loader {
 			'component'     => $component,
 			'callback'      => $callback,
 			'priority'      => $priority,
-			'accepted_args' => $accepted_args
+			'accepted_args' => $accepted_args,
+			'is_loaded'     => false,
 		);
 
 		return $hooks;
@@ -116,11 +117,33 @@ class Quote_Builder_Loader {
 	public function run() {
 
 		foreach ( $this->filters as $hook ) {
-			add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			if ( isset( $hook['is_loaded'] ) && ! $hook['is_loaded'] ) {
+				add_filter(
+					$hook['hook'],
+					array(
+						$hook['component'],
+						$hook['callback'],
+					),
+					$hook['priority'],
+					$hook['accepted_args']
+				);
+				$hook['is_loaded'] = true;
+			}
 		}
 
 		foreach ( $this->actions as $hook ) {
-			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+			if ( isset( $hook['is_loaded'] ) && ! $hook['is_loaded'] ) {
+				add_action(
+					$hook['hook'],
+					array(
+						$hook['component'],
+						$hook['callback'],
+					),
+					$hook['priority'],
+					$hook['accepted_args']
+				);
+				$hook['is_loaded'] = true;
+			}
 		}
 
 	}

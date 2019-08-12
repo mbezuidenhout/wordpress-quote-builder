@@ -75,9 +75,10 @@ class Quote_Builder {
 
 		$this->load_dependencies();
 		$this->set_locale();
-		$this->define_admin_hooks();
 		$this->define_public_hooks();
 
+		// Load admin dependencies.
+		add_action( 'init', array( $this, 'define_admin_hooks' ) );
 	}
 
 	/**
@@ -110,10 +111,12 @@ class Quote_Builder {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-i18n.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-quote-builder-admin.php';
+		if ( is_admin() ) {
+			/**
+			 * The class responsible for defining all actions that occur in the admin area.
+			 */
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-quote-builder-admin.php';
+		}
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -149,13 +152,20 @@ class Quote_Builder {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	public function define_admin_hooks() {
+		if ( is_user_logged_in() && is_admin() ) {
+			$plugin_admin = new Quote_Builder_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$plugin_admin = new Quote_Builder_Admin( $this->get_plugin_name(), $this->get_version() );
+			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+			$this->loader->add_filter( 'admin_url', $plugin_admin, 'admin_new_quote_url', 10, 2 );
+			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
+			$this->loader->add_action( 'admin_init', $plugin_admin, 'redirect_admin_new_quote_url' );
 
+
+			$this->run();
+		}
 	}
 
 	/**
@@ -172,6 +182,7 @@ class Quote_Builder {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		$this->loader->add_action( 'init', $plugin_public, 'create_post_type' );
 	}
 
 	/**

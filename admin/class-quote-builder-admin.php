@@ -43,13 +43,13 @@ class Quote_Builder_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name  The name of this plugin.
+	 * @param      string $version      The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 	}
 
@@ -97,6 +97,61 @@ class Quote_Builder_Admin {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/quote-builder-admin.js', array( 'jquery' ), $this->version, false );
 
+	}
+
+	/**
+	 * Create admin menu options.
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_menu() {
+		remove_submenu_page( 'edit.php?post_type=quote', 'post-new.php?post_type=quote' );
+
+		$cptobj = get_post_type_object( 'quote' );
+		if ( current_user_can( $cptobj->cap->create_posts ) ) {
+			add_submenu_page(
+				'edit.php?post_type=quote',
+				$cptobj->labels->add_new_item,
+				$cptobj->labels->add_new,
+				$cptobj->cap->create_posts,
+				'new_quote',
+				array( $this, 'new_quote' )
+			);
+		}
+	}
+
+	public function new_quote() {
+
+	}
+
+	/**
+	 * Replace Add Quote URL in admin pages.
+	 *
+	 * @param string $url  Original new post type url.
+	 * @param string $path Requested path.
+	 *
+	 * @return string|void
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_new_quote_url( $url, $path ) {
+		if ( 'post-new.php?post_type=quote' === $path ) {
+			return admin_url( 'edit.php?post_type=quote&page=new_quote' );
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Redirect any attempts to create a new quote post type to our new page.
+	 */
+	public function redirect_admin_new_quote_url() {
+		global $pagenow;
+
+		if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'quote' === $_GET['post_type'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+			wp_safe_redirect( admin_url( 'post-new.php?post_type=quote' ), '301' );
+			exit;
+		}
 	}
 
 }
