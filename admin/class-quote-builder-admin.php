@@ -109,7 +109,7 @@ class Quote_Builder_Admin {
 
 		$cptobj = get_post_type_object( 'quote' );
 		if ( current_user_can( $cptobj->cap->create_posts ) ) {
-			add_submenu_page(
+			$new_quote_page = add_submenu_page(
 				'edit.php?post_type=quote',
 				$cptobj->labels->add_new_item,
 				$cptobj->labels->add_new,
@@ -117,11 +117,39 @@ class Quote_Builder_Admin {
 				'new_quote',
 				array( $this, 'new_quote' )
 			);
+
+			// Add action for screen options on this new page.
+			add_action( 'load-' . $new_quote_page, array( $this, 'admin_new_quote_page_scripts' ) );
 		}
 	}
 
-	public function new_quote() {
+	/**
+	 * Add help tab and screen options here.
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_new_quote_page_scripts() {
+		$current_screen = get_current_screen();
 
+		$current_screen->add_help_tab(
+			array(
+				'id'      => 'overview',
+				'title'   => __( 'Overview', 'quote-builder' ),
+				'content' =>
+					'<p><strong>' . esc_html__( 'New Quote', 'quote-builder' ) . '</strong></p>' .
+					'<p>' . esc_html__( 'Create new custom quotes on this page.', 'quote-builder' ) . '</p>',
+			)
+		);
+
+	}
+
+	/**
+	 * Display the quote form.
+	 *
+	 * @since    1.0.0
+	 */
+	public function new_quote() {
+		include 'partials/quote-new.php';
 	}
 
 	/**
@@ -135,9 +163,9 @@ class Quote_Builder_Admin {
 	 * @since    1.0.0
 	 */
 	public function admin_new_quote_url( $url, $path ) {
-		if ( 'post-new.php?post_type=quote' === $path ) {
-			return admin_url( 'edit.php?post_type=quote&page=new_quote' );
-		}
+		//if ( 'post-new.php?post_type=quote' === $path ) {
+		//	return admin_url( 'edit.php?post_type=quote&page=new_quote' );
+		//}
 
 		return $url;
 	}
@@ -146,12 +174,12 @@ class Quote_Builder_Admin {
 	 * Redirect any attempts to create a new quote post type to our new page.
 	 */
 	public function redirect_admin_new_quote_url() {
-		global $pagenow;
+		/*		global $pagenow;
 
-		if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'quote' === $_GET['post_type'] ) { // phpcs:ignore WordPress.Security.NonceVerification
-			wp_safe_redirect( admin_url( 'post-new.php?post_type=quote' ), '301' );
-			exit;
-		}
+				if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'quote' === $_GET['post_type'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+					wp_safe_redirect( admin_url( 'post-new.php?post_type=quote' ), '301' );
+					exit;
+				}*/
 	}
 
 }

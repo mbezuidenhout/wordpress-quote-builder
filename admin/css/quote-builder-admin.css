@@ -2,3 +2,19 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+.column-handle {
+	width: 17px;
+}
+
+table.qb-quote-items tbody td.column-handle::before {
+	content: "\f333";
+	font-family: Dashicons;
+	text-align: center;
+	line-height: 1;
+	color: #999;
+	display: block;
+	width: 17px;
+	height: 100%;
+	margin: 4px 0 0 0;
+}

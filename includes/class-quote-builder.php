@@ -111,11 +111,21 @@ class Quote_Builder {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-i18n.php';
 
+		/**
+		 * The class responsible for the custom post type quote.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-cpt-quote.php';
+
 		if ( is_admin() ) {
 			/**
 			 * The class responsible for defining all actions that occur in the admin area.
 			 */
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-quote-builder-admin.php';
+
+			/**
+			 * The class responsible for defining strings and methods.
+			 */
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-admin-cpt-quote.php';
 		}
 
 		/**
@@ -155,6 +165,7 @@ class Quote_Builder {
 	public function define_admin_hooks() {
 		if ( is_user_logged_in() && is_admin() ) {
 			$plugin_admin = new Quote_Builder_Admin( $this->get_plugin_name(), $this->get_version() );
+			$cpt_quote    = Admin_CPT_Quote::get_instance( $this->get_plugin_name(), $this->get_version() );
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -163,6 +174,17 @@ class Quote_Builder {
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
 			$this->loader->add_action( 'admin_init', $plugin_admin, 'redirect_admin_new_quote_url' );
 
+
+			$this->loader->add_filter( 'post_updated_messages', $cpt_quote, 'post_updated_messages' );
+			$this->loader->add_filter( 'bulk_post_updated_messages', $cpt_quote, 'bulk_post_updated_messages', 10, 2 );
+			$this->loader->add_filter( 'enter_title_here', $cpt_quote, 'title_placeholder', 10., 2 );
+
+			$post_type = 'quote';
+			$this->loader->add_action( 'admin_enqueue_scripts', $cpt_quote, 'enqueue_scripts' );
+			$this->loader->add_action( "add_meta_boxes_{$post_type}", $cpt_quote, 'add_meta_boxes' );
+			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote', 10, 3 );
+			$this->loader->add_filter( "manage_{$post_type}_posts_columns", $cpt_quote, 'quotes_columns' );
+			$this->loader->add_filter( 'manage_edit-quote_sortable_columns', $cpt_quote, 'quotes_sortable_columns' );
 
 			$this->run();
 		}
@@ -179,10 +201,12 @@ class Quote_Builder {
 
 		$plugin_public = new Quote_Builder_Public( $this->get_plugin_name(), $this->get_version() );
 
+		$cpt_quote = Quote_Builder_CPT_Quote::get_instance( $this->get_plugin_name(), $this->get_version() );
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		$this->loader->add_action( 'init', $plugin_public, 'create_post_type' );
+		$this->loader->add_action( 'init', $cpt_quote, 'create_post_type' );
 	}
 
 	/**
