@@ -18,3 +18,15 @@ table.qb-quote-items tbody td.column-handle::before {
 	height: 100%;
 	margin: 4px 0 0 0;
 }
+
+table.qb-quote-items tbody td.column-handle {
+	cursor: move;
+	text-align: center;
+	vertical-align: text-top;
+}
+
+p[data-placeholder]:not(:focus):not([data-placeholder-content]):before {
+	content: attr(data-placeholder);
+	opacity: 0.5;
+	font-style: italic;
+}

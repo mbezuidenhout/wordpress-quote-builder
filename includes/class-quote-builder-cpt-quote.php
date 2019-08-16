@@ -87,12 +87,11 @@ class Quote_Builder_CPT_Quote {
 					'show_in_admin_bar'  => true,
 					'publicly_queryable' => false,
 					'show_in_nav_menus'  => false,
-					'hierarchical'       => true,
+					'hierarchical'       => false,
 					'supports'           => array(
 						'title',
 						'author',
 						'comments',
-						'page-attributes',
 					),
 					'has_archive'        => true,
 					'delete_with_user'   => false,

@@ -105,7 +105,7 @@ class Admin_CPT_Quote {
 	 */
 	public function save_quote( $post_ID, $post, $update ) {
 		if ( ! isset( $_POST['_wpnonce_quote_items'] ) ||
-			! wp_verify_nonce( sanitize_key( $_POST['_wpnonce_quote_items'] ) ) ) {
+			! wp_verify_nonce( sanitize_key( $_POST['_wpnonce_quote_items'] ), 'quote-items' ) ) {
 			return $post_ID;
 		}
 
@@ -118,11 +118,11 @@ class Admin_CPT_Quote {
 			return $post_ID;
 		}
 
-		$old = get_post_meta( $post_ID, 'quote_lines', true );
-		$new = $_POST['lines'];
+		$old = get_post_meta( $post_ID, 'quote_line_items', true );
+		$new = $_POST['quote_line_items'];
 
 		if ( $new && $new !== $old ) {
-			//update_post_meta( $post_ID, 'quote_lines', $new );
+			update_post_meta( $post_ID, 'quote_line_items', $new );
 		}
 	}
 
@@ -135,7 +135,7 @@ class Admin_CPT_Quote {
 	public function add_meta_boxes( $post ) {
 		remove_meta_box( 'commentstatusdiv', 'quote', 'normal' );
 		remove_meta_box( 'slugdiv', 'quote', 'normal' );
-		add_meta_box( 'quoteitemsdiv', __( 'Quote entries', 'quote-builder' ), array( $this, 'meta_box_quote_items' ), 'quote', 'normal', 'high' );
+		add_meta_box( 'quoteitemsdiv', __( 'Quote line items', 'quote-builder' ), array( $this, 'meta_box_quote_items' ), 'quote', 'normal', 'high' );
 	}
 
 	/**
@@ -153,7 +153,7 @@ class Admin_CPT_Quote {
 		$messages['quote'] = array(
 			0  => '',
 			/* translators: %s: Permalink. */
-			1  => sprintf( __( 'Study updated. <a href="%s">View quote</a>' ), $link ),
+			1  => sprintf( __( 'Quote updated. <a href="%s">View quote</a>' ), $link ),
 			2  => __( 'Custom field updated.' ),
 			3  => __( 'Custom field deleted.' ),
 			4  => __( 'Quote updated.' ),
