@@ -85,8 +85,11 @@ $quote_lines = get_post_meta( $GLOBALS['post_ID'], 'quote_line_items', true );
 <?php quote_lines( $columns ); ?>
 <?php
 $number = 0;
-foreach ( $quote_lines as $quote_line )
-    quote_lines( $columns, $quote_line, $number++ );
+if( ! empty( $quote_lines ) ) {
+	foreach ( $quote_lines as $quote_line ) {
+		quote_lines( $columns, $quote_line, $number ++ );
+	}
+}
 ?>
 	</tbody>
 	<tfoot>

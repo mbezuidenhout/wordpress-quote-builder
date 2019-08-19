@@ -116,6 +116,16 @@ class Quote_Builder {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-cpt-quote.php';
 
+		/**
+		 * The class responsible for providing WordPress Settings API functionality.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-settings-api.php';
+
+		/**
+		 * The class responsible for plugin settings.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-settings.php';
+
 		if ( is_admin() ) {
 			/**
 			 * The class responsible for defining all actions that occur in the admin area.
@@ -133,6 +143,11 @@ class Quote_Builder {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-quote-builder-public.php';
+
+		/**
+		 * Load packages loaded through composer.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
 
 		$this->loader = new Quote_Builder_Loader();
 
@@ -172,15 +187,16 @@ class Quote_Builder {
 
 			$this->loader->add_filter( 'admin_url', $plugin_admin, 'admin_new_quote_url', 10, 2 );
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
-			$this->loader->add_action( 'admin_init', $plugin_admin, 'redirect_admin_new_quote_url' );
-
+			$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
+			$this->loader->add_action( 'quote_builder_print', $plugin_admin, 'print_quote' );
 
 			$this->loader->add_filter( 'post_updated_messages', $cpt_quote, 'post_updated_messages' );
 			$this->loader->add_filter( 'bulk_post_updated_messages', $cpt_quote, 'bulk_post_updated_messages', 10, 2 );
 			$this->loader->add_filter( 'enter_title_here', $cpt_quote, 'title_placeholder', 10., 2 );
+			$this->loader->add_action( 'admin_enqueue_scripts', $cpt_quote, 'enqueue_scripts' );
+			$this->loader->add_action( 'post_row_actions', $cpt_quote, 'post_row_actions', 10, 2 );
 
 			$post_type = 'quote';
-			$this->loader->add_action( 'admin_enqueue_scripts', $cpt_quote, 'enqueue_scripts' );
 			$this->loader->add_action( "add_meta_boxes_{$post_type}", $cpt_quote, 'add_meta_boxes' );
 			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote', 10, 3 );
 			$this->loader->add_filter( "manage_{$post_type}_posts_columns", $cpt_quote, 'quotes_columns' );

@@ -1,6 +1,7 @@
 /**
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
+ * @see https://codepen.io/rafaelcastrocouto/pen/LFAes for page layout examples.
  */
 
 .column-handle {
@@ -29,4 +30,26 @@ p[data-placeholder]:not(:focus):not([data-placeholder-content]):before {
 	content: attr(data-placeholder);
 	opacity: 0.5;
 	font-style: italic;
+}
+
+.qb-logo {
+	right: 0;
+	top: 0;
+	position: absolute;
+}
+
+img.qb-logo {
+	max-height: 150px;
+	max-width: 150px;
+}
+
+.qb-heading {
+	left: 0;
+}
+
+@media print {
+	body, page {
+		margin: 0;
+		box-shadow: unset;
+	}
 }

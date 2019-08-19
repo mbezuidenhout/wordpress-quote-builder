@@ -152,8 +152,7 @@ class Admin_CPT_Quote {
 
 		$messages['quote'] = array(
 			0  => '',
-			/* translators: %s: Permalink. */
-			1  => sprintf( __( 'Quote updated. <a href="%s">View quote</a>' ), $link ),
+			1  => __( 'Quote updated.' ),
 			2  => __( 'Custom field updated.' ),
 			3  => __( 'Custom field deleted.' ),
 			4  => __( 'Quote updated.' ),
@@ -211,6 +210,28 @@ class Admin_CPT_Quote {
 			return __( 'Add quote number', 'quote-builder' );
 		}
 		return $placeholder;
+	}
+
+	/**
+	 * Add view action for the custom post type quote.
+	 *
+	 * @param array   $actions An array of actions.
+	 * @param WP_Post $post    Instance of WP_Post.
+	 *
+	 * @return mixed
+	 */
+	public function post_row_actions( $actions, $post ) {
+		if ( 'quote' === $post->post_type ) {
+			$view_quote_page = plugin_dir_url( __FILE__ ) . 'quote.php?quote=' . $post->ID . '&_wpnonce=' . wp_create_nonce();
+			$actions['view'] = sprintf(
+				'<a href="%s" class="submitview" aria-label="%s &#8220;%s&#8221;">%s</a>',
+				admin_url( 'edit.php?post_type=quote&page=view&post=' . $post->ID ), // admin_url( 'edit.php?post=' . $post->ID . '&post_type=quote&_wpnonce=' . wp_create_nonce() ),.
+				__( 'View' ),
+				$post->post_title,
+				__( 'View' )
+			);
+		}
+		return $actions;
 	}
 
 	/**

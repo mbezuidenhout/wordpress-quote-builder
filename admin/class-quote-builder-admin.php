@@ -105,51 +105,102 @@ class Quote_Builder_Admin {
 	 * @since    1.0.0
 	 */
 	public function admin_menu() {
-		remove_submenu_page( 'edit.php?post_type=quote', 'post-new.php?post_type=quote' );
+		$cptobj         = get_post_type_object( 'quote' );
+		$settings_class = Quote_Builder_Settings::get_instance();
 
-		$cptobj = get_post_type_object( 'quote' );
-		if ( current_user_can( $cptobj->cap->create_posts ) ) {
-			$new_quote_page = add_submenu_page(
-				'edit.php?post_type=quote',
-				$cptobj->labels->add_new_item,
-				$cptobj->labels->add_new,
-				$cptobj->cap->create_posts,
-				'new_quote',
-				array( $this, 'new_quote' )
-			);
-
-			// Add action for screen options on this new page.
-			add_action( 'load-' . $new_quote_page, array( $this, 'admin_new_quote_page_scripts' ) );
-		}
-	}
-
-	/**
-	 * Add help tab and screen options here.
-	 *
-	 * @since    1.0.0
-	 */
-	public function admin_new_quote_page_scripts() {
-		$current_screen = get_current_screen();
-
-		$current_screen->add_help_tab(
-			array(
-				'id'      => 'overview',
-				'title'   => __( 'Overview', 'quote-builder' ),
-				'content' =>
-					'<p><strong>' . esc_html__( 'New Quote', 'quote-builder' ) . '</strong></p>' .
-					'<p>' . esc_html__( 'Create new custom quotes on this page.', 'quote-builder' ) . '</p>',
-			)
+		add_submenu_page(
+			'',
+			__( 'View quote' ),
+			__( 'View' ),
+			$cptobj->cap->create_posts,
+			'view',
+			array( $this, 'view_quote' )
 		);
 
+		add_submenu_page(
+			'',
+			__( 'Print quote' ),
+			__( 'Print' ),
+			$cptobj->cap->create_posts,
+			'print',
+			array( $this, 'print_quote' )
+		);
+
+		add_submenu_page(
+			'edit.php?post_type=quote',
+			__( 'Settings' ),
+			__( 'Settings' ),
+			'manage_options',
+			'settings',
+			array( $settings_class, 'settings_page' )
+		);
+	}
+
+	protected function setup_quote_page() {
+		$post        = get_post( $_REQUEST['post'] );
+		$qb_settings = Quote_Builder_Settings::get_instance();
+		$logo        = $qb_settings->get_setting( 'logo' );
+
+		return array(
+			'post'     => $post,
+			'settings' => $qb_settings,
+			'logo'     => $logo,
+		);
 	}
 
 	/**
-	 * Display the quote form.
-	 *
-	 * @since    1.0.0
+	 * Output the quote view page.
 	 */
-	public function new_quote() {
-		include 'partials/quote-new.php';
+	public function view_quote() {
+		$variables = $this->setup_quote_page();
+		wp_enqueue_style( 'quote-builder-print-preview', plugin_dir_url( __FILE__ ) . 'css/quote-builder-print-preview.css', array(), $this->version, 'screen' );
+		include 'partials/quote-view.php';
+	}
+
+	public function print_quote() {
+		if ( ! defined( 'PRINT_DEBUG' ) ) {
+			//define( 'PRINT_DEBUG', true );
+		}
+
+		$qb_settings = Quote_Builder_Settings::get_instance();
+		wp_enqueue_style( 'quote-builder-print', plugin_dir_url( __FILE__ ) . 'css/quote-builder-print.css', array(), $this->version, 'all' );
+
+		$variables = $this->setup_quote_page();
+		ob_start();
+		include 'partials/quote-print-header.php';
+		include 'partials/quote-print-pages.php';
+		include 'partials/quote-print-footer.php';
+		$html = ob_get_clean();
+
+		if ( defined( 'PRINT_DEBUG' ) && PRINT_DEBUG ) {
+			die( $html );
+		}
+
+		if ( isset( $_SERVER['HTTP_HOST'] ) && 'localhost' === $_SERVER['HTTP_HOST'] ) {
+			$context_options = array(
+				'ssl' => array(
+					'verify_peer' => false,
+				),
+			);
+
+			stream_context_get_default( $context_options );
+		}
+
+		$snappy = new \Knp\Snappy\Pdf( plugin_dir_path( __DIR__ ) . 'vendor/bin/wkhtmltopdf-amd64' );
+
+		$file     = '/tmp/test.pdf';
+		$filename = 'test.pdf'; /* Note: Always use .pdf at the end. */
+
+		$snappy->generateFromHtml( $html, $file );
+
+		header( 'Content-type: application/pdf' );
+		header( 'Content-Disposition: inline; filename="' . $filename . '"' );
+		header( 'Content-Transfer-Encoding: binary' );
+		header( 'Content-Length: ' . filesize( $file ) );
+		header( 'Accept-Ranges: bytes' );
+
+		@readfile( $file );
+		unlink( $file );
 	}
 
 	/**
@@ -173,7 +224,8 @@ class Quote_Builder_Admin {
 	/**
 	 * Redirect any attempts to create a new quote post type to our new page.
 	 */
-	public function redirect_admin_new_quote_url() {
+	public function admin_init() {
+		Quote_Builder_Settings::get_instance()->add_settings_fields();
 		/*		global $pagenow;
 
 				if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'quote' === $_GET['post_type'] ) { // phpcs:ignore WordPress.Security.NonceVerification
