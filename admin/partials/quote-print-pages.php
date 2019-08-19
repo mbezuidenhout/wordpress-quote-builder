@@ -1,5 +1,6 @@
 <?php
-$columns = Quote_Builder_CPT_Quote::get_instance()->get_columns();
+$columns  = Quote_Builder_CPT_Quote::get_instance()->get_columns();
+$customer = get_userdata( Quote_Builder_CPT_Quote::get_instance()->get_customer_user_id( $variables['post']->ID ) );
 
 function quote_lines( $columns, $content = array(), $line_number = null ) {
 	?>
@@ -24,12 +25,18 @@ function quote_lines( $columns, $content = array(), $line_number = null ) {
 ?>
 
 <div class="qb-preview">
-    <page size="A4">
+    <page size="<?php echo esc_attr( $variables[ 'settings' ]->get_setting( 'page_size' ) ); ?>" layout="<?php echo esc_attr( $variables[ 'settings' ]->get_setting( 'page_orientation' ) ); ?>">
         <div class="qb-logo"><img src="<?php echo $variables['logo']; ?>" class="qb-logo"></div>
         <div class="qb-heading"><h1><?php echo __( 'Quotation', 'quote-builder' ) ?></h1></div>
         <div class="clear-left"></div>
         <div class="qb-details-left">
-            <span>Quote number: </span><span><?php echo $variables['post']->post_title ?></span>
+            <div><span><?php echo __( 'Quote number:', 'quote-builder' ); ?></span><span><?php echo $variables['post']->post_title ?></span></div>
+            <div><span><?php echo __( 'Company:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'company' ); ?></span></div>
+            <div><span><?php echo __( 'Attention:', 'quote-builder' ); ?></span><span><?php echo $customer->first_name . ' ' . $customer->last_name; ?></span></div>
+            <div><span><?php echo __( 'Phone number:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'work_phone' ); ?></span></div>
+            <div><span><?php echo __( 'Fax number:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'work_phone' ); ?></span></div>
+            <div><span><?php echo __( 'Mobile number:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'work_phone' ); ?></span></div>
+            <div><span><?php echo __( 'Email:', 'quote-builder' ); ?></span><span><?php echo $customer->user_email; ?></span></div>
         </div>
         <div class="clear"></div>
         <div class="qb-content">

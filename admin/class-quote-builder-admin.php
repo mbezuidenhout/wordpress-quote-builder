@@ -157,6 +157,9 @@ class Quote_Builder_Admin {
 		include 'partials/quote-view.php';
 	}
 
+	/**
+	 * Output pdf
+	 */
 	public function print_quote() {
 		if ( ! defined( 'PRINT_DEBUG' ) ) {
 			//define( 'PRINT_DEBUG', true );
@@ -173,7 +176,7 @@ class Quote_Builder_Admin {
 		$html = ob_get_clean();
 
 		if ( defined( 'PRINT_DEBUG' ) && PRINT_DEBUG ) {
-			die( $html );
+			die( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( isset( $_SERVER['HTTP_HOST'] ) && 'localhost' === $_SERVER['HTTP_HOST'] ) {
@@ -187,6 +190,8 @@ class Quote_Builder_Admin {
 		}
 
 		$snappy = new \Knp\Snappy\Pdf( plugin_dir_path( __DIR__ ) . 'vendor/bin/wkhtmltopdf-amd64' );
+		$snappy->setOption( 'page-size', $qb_settings->get_setting( 'page_size' ) );
+		$snappy->setOption( 'orientation', $qb_settings->get_setting( 'page_orientation' ) );
 
 		$file     = '/tmp/test.pdf';
 		$filename = 'test.pdf'; /* Note: Always use .pdf at the end. */

@@ -103,7 +103,7 @@ class Admin_CPT_Quote {
 	 *
 	 * @return int
 	 */
-	public function save_quote( $post_ID, $post, $update ) {
+	public function save_quote_line_items( $post_ID, $post, $update ) {
 		if ( ! isset( $_POST['_wpnonce_quote_items'] ) ||
 			! wp_verify_nonce( sanitize_key( $_POST['_wpnonce_quote_items'] ), 'quote-items' ) ) {
 			return $post_ID;
@@ -126,6 +126,29 @@ class Admin_CPT_Quote {
 		}
 	}
 
+	public function save_quote_customer( $post_ID, $post, $update ) {
+		if ( ! isset( $_POST['_wpnonce_quote_customer'] ) ||
+			! wp_verify_nonce( sanitize_key( $_POST['_wpnonce_quote_customer'] ), 'quote-customer' ) ) {
+			return $post_ID;
+		}
+
+		// check autosave.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return $post_ID;
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_ID ) ) {
+			return $post_ID;
+		}
+
+		$old = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $post_ID );
+		$new = wp_unslash( $_POST['qb_customer_id'] );
+
+		if ( $new && $new !== $old ) {
+			update_post_meta( $post_ID, 'quote_customer_user_id', $new );
+		}
+	}
+
 	/**
 	 * Add the quote meta boxes.
 	 *
@@ -135,7 +158,8 @@ class Admin_CPT_Quote {
 	public function add_meta_boxes( $post ) {
 		remove_meta_box( 'commentstatusdiv', 'quote', 'normal' );
 		remove_meta_box( 'slugdiv', 'quote', 'normal' );
-		add_meta_box( 'quoteitemsdiv', __( 'Quote line items', 'quote-builder' ), array( $this, 'meta_box_quote_items' ), 'quote', 'normal', 'high' );
+		add_meta_box( 'quoteitemsdiv', __( 'Line items', 'quote-builder' ), array( $this, 'meta_box_quote_items' ), 'quote', 'normal', 'high' );
+		add_meta_box( 'quotecustomerdev', __( 'Customer', 'quote-builder' ), array( $this, 'meta_box_quote_customer' ), 'quote', 'side', 'high' );
 	}
 
 	/**
@@ -251,6 +275,32 @@ class Admin_CPT_Quote {
 		$columns = Quote_Builder_CPT_Quote::get_instance()->get_columns();
 
 		include 'partials/quote-items.php';
+	}
+
+	/**
+	 * Build the customer field meta box.
+	 *
+	 * @param WP_POST $post The post object.
+	 */
+	public function meta_box_quote_customer( $post ) {
+		include 'partials/quote-customer.php';
+	}
+
+	/**
+	 * Add company field to user contact methods.
+	 *
+	 * @param array $methods Associative array of contact methods.
+	 *
+	 * @return mixed
+	 */
+	public function user_contactmethods( $methods ) {
+		$new_methods = array(
+			'company'    => __( 'Company', 'quote-builder' ),
+			'mobile'     => __( 'Mobile', 'quote-builder' ),
+			'work_fax'   => __( 'Fax', 'quote-builder' ),
+			'work_phone' => __( 'Work phone', 'quote-builder' ),
+		);
+		return array_merge( $methods, $new_methods );
 	}
 
 }

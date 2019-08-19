@@ -192,12 +192,14 @@ class Quote_Builder {
 			$this->loader->add_filter( 'post_updated_messages', $cpt_quote, 'post_updated_messages' );
 			$this->loader->add_filter( 'bulk_post_updated_messages', $cpt_quote, 'bulk_post_updated_messages', 10, 2 );
 			$this->loader->add_filter( 'enter_title_here', $cpt_quote, 'title_placeholder', 10., 2 );
+			$this->loader->add_filter( 'user_contactmethods', $cpt_quote, 'user_contactmethods' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $cpt_quote, 'enqueue_scripts' );
 			$this->loader->add_action( 'post_row_actions', $cpt_quote, 'post_row_actions', 10, 2 );
 
 			$post_type = 'quote';
 			$this->loader->add_action( "add_meta_boxes_{$post_type}", $cpt_quote, 'add_meta_boxes' );
-			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote', 10, 3 );
+			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote_line_items', 10, 3 );
+			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote_customer', 10, 3 );
 			$this->loader->add_filter( "manage_{$post_type}_posts_columns", $cpt_quote, 'quotes_columns' );
 			$this->loader->add_filter( 'manage_edit-quote_sortable_columns', $cpt_quote, 'quotes_sortable_columns' );
 

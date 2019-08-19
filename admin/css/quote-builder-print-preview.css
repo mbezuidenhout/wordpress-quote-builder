@@ -17,7 +17,7 @@ page[size="Letter"] {
 	height: 27.9cm;
 }
 
-page[size="Letter"][layout="landscape"] {
+page[size="Letter"][layout="Landscape" i] {
 	width: 27.9cm;
 	height: 21.6cm;
 }
@@ -27,7 +27,7 @@ page[size="Legal"] {
 	height: 35.6cm;
 }
 
-page[size="Legal"][layout="landscape"] {
+page[size="Legal"][layout="Landscape" i] {
 	width: 35.6cm;
 	height: 21.6cm;
 }
@@ -37,7 +37,7 @@ page[size="A3"] {
 	height: 42cm;
 }
 
-page[size="A3"][layout="landscape"] {
+page[size="A3"][layout="Landscape" i] {
 	width: 42cm;
 	height: 29.7cm;
 }
@@ -47,7 +47,7 @@ page[size="A4"] {
 	height: 29.7cm;
 }
 
-page[size="A4"][layout="landscape"] {
+page[size="A4"][layout="Landscape" i] {
 	width: 29.7cm;
 	height: 21cm;
 }
@@ -57,7 +57,7 @@ page[size="A5"] {
 	height: 21cm;
 }
 
-page[size="A5"][layout="landscape"] {
+page[size="A5"][layout="Landscape" i] {
 	width: 21cm;
 	height: 14.8cm;
 }

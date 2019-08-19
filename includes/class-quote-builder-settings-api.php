@@ -1,5 +1,4 @@
 <?php
-
 /**
  * WeDevs Settings API wrapper class
  *
@@ -9,11 +8,15 @@
  * @link https://tareq.co Tareq Hasan
  * @example example/oop-example.php How to use the class
  */
+
 if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
+	/**
+	 * WeDevs Settings API wrapper class
+	 */
 	class Quote_Builder_Settings_API {
 
 		/**
-		 * settings sections array
+		 * Settings sections array
 		 *
 		 * @var array
 		 */
@@ -26,6 +29,9 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 */
 		protected $settings_fields = array();
 
+		/**
+		 * Quote_Builder_Settings_API constructor.
+		 */
 		public function __construct() {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		}
@@ -33,7 +39,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		/**
 		 * Enqueue scripts and styles
 		 */
-		function admin_enqueue_scripts() {
+		public function admin_enqueue_scripts() {
 			wp_enqueue_style( 'wp-color-picker' );
 
 			wp_enqueue_media();
@@ -48,7 +54,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @return $this
 		 */
-		function set_sections( $sections ) {
+		public function set_sections( $sections ) {
 			$this->settings_sections = $sections;
 
 			return $this;
@@ -57,11 +63,11 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		/**
 		 * Add a single section.
 		 *
-		 * @param array $section
+		 * @param array $section Add section.
 		 *
 		 * @return $this
 		 */
-		function add_section( $section ) {
+		public function add_section( $section ) {
 			$this->settings_sections[] = $section;
 
 			return $this;
@@ -70,22 +76,28 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		/**
 		 * Set settings fields
 		 *
-		 * @param array $fields settings fields array
+		 * @param array $fields Settings fields array.
 		 *
 		 * @return $this
 		 */
-		function set_fields( $fields ) {
+		public function set_fields( $fields ) {
 			$this->settings_fields = $fields;
 
 			return $this;
 		}
 
-		function add_field( $section, $field ) {
+		/**
+		 * @param string $section
+		 * @param array $field
+		 *
+		 * @return $this
+		 */
+		public function add_field( $section, $field ) {
 			$defaults = array(
 				'name'  => '',
 				'label' => '',
 				'desc'  => '',
-				'type'  => 'text'
+				'type'  => 'text',
 			);
 
 			$arg                                 = wp_parse_args( $field, $defaults );
@@ -102,10 +114,10 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 * This function gets the initiated settings sections and fields. Then
 		 * registers them to WordPress and ready for use.
 		 */
-		function admin_init() {
+		public function admin_init() {
 			// register settings sections.
 			foreach ( $this->settings_sections as $section ) {
-				if ( false == get_option( $section['id'] ) ) {
+				if ( false === get_option( $section['id'] ) ) {
 					add_option( $section['id'] );
 				}
 
@@ -185,7 +197,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args
 		 */
-		function callback_text( $args ) {
+		public function callback_text( $args ) {
 
 			$value       = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -203,7 +215,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_url( $args ) {
+		public function callback_url( $args ) {
 			$this->callback_text( $args );
 		}
 
@@ -212,7 +224,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_number( $args ) {
+		public function callback_number( $args ) {
 			$value       = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 			$type        = isset( $args['type'] ) ? $args['type'] : 'number';
@@ -232,7 +244,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_checkbox( $args ) {
+		public function callback_checkbox( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 
@@ -251,7 +263,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_multicheck( $args ) {
+		public function callback_multicheck( $args ) {
 
 			$value = $this->get_option( $args['id'], $args['section'], $args['std'] );
 			$html  = '<fieldset>';
@@ -274,7 +286,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_radio( $args ) {
+		public function callback_radio( $args ) {
 
 			$value = $this->get_option( $args['id'], $args['section'], $args['std'] );
 			$html  = '<fieldset>';
@@ -296,7 +308,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_select( $args ) {
+		public function callback_select( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -317,7 +329,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_textarea( $args ) {
+		public function callback_textarea( $args ) {
 
 			$value       = esc_textarea( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -334,7 +346,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_html( $args ) {
+		public function callback_html( $args ) {
 			echo $this->get_field_description( $args );
 		}
 
@@ -343,7 +355,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_wysiwyg( $args ) {
+		public function callback_wysiwyg( $args ) {
 
 			$value = $this->get_option( $args['id'], $args['section'], $args['std'] );
 			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : '500px';
@@ -372,7 +384,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_file( $args ) {
+		public function callback_file( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -391,7 +403,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_password( $args ) {
+		public function callback_password( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -407,7 +419,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_color( $args ) {
+		public function callback_color( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -424,7 +436,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @param array $args settings field args.
 		 */
-		function callback_pages( $args ) {
+		public function callback_pages( $args ) {
 
 			$dropdown_args = array(
 				'selected' => esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) ),
@@ -441,7 +453,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @return mixed
 		 */
-		function sanitize_options( $options ) {
+		public function sanitize_options( $options ) {
 
 			if ( ! $options ) {
 				return $options;
@@ -467,7 +479,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @return mixed string or bool false
 		 */
-		function get_sanitize_callback( $slug = '' ) {
+		private function get_sanitize_callback( $slug = '' ) {
 			if ( empty( $slug ) ) {
 				return false;
 			}
@@ -496,7 +508,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * @return string
 		 */
-		function get_option( $option, $section, $default = '' ) {
+		private function get_option( $option, $section, $default = '' ) {
 
 			$options = get_option( $section );
 
@@ -512,7 +524,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * Shows all the settings section labels as tab
 		 */
-		function show_navigation() {
+		public function show_navigation() {
 			$html = '<h2 class="nav-tab-wrapper">';
 
 			$count = count( $this->settings_sections );
@@ -536,7 +548,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * This function displays every sections in a different form
 		 */
-		function show_forms() {
+		public function show_forms() {
 			?>
             <div class="metabox-holder">
 				<?php foreach ( $this->settings_sections as $form ) { ?>
@@ -566,7 +578,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 		 *
 		 * This code uses localstorage for displaying active tabs
 		 */
-		function script() {
+		private function script() {
 			?>
             <script>
 				jQuery(document).ready(function ($) {
@@ -588,7 +600,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 						}
 					}
 
-					if (activetab != '' && $(activetab).length) {
+					if (activetab !== '' && $(activetab).length) {
 						$(activetab).fadeIn()
 					} else {
 						$('.group:first').fadeIn()
@@ -649,7 +661,7 @@ if ( ! class_exists( 'Quote_Builder_Settings_API' ) ) :
 			$this->_style_fix();
 		}
 
-		function _style_fix() {
+		private function _style_fix() {
 			global $wp_version;
 
 			if ( version_compare( $wp_version, '3.8', '<=' ) ):

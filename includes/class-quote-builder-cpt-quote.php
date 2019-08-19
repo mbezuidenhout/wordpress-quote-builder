@@ -140,6 +140,16 @@ class Quote_Builder_CPT_Quote {
 	 */
 	public function get_line_items( $post_id ) {
 		return apply_filters( 'quote_builder_quote_items', get_post_meta( $post_id, 'quote_line_items', true ), $post_id );
+	}
 
+	/**
+	 * Get the quote customer.
+	 *
+	 * @param int $post_id ID of the custom post type quote.
+	 *
+	 * @return mixed
+	 */
+	public function get_customer_user_id( $post_id ) {
+		return apply_filters( 'quote_builder_quote_customer', intval( get_post_meta( $post_id, 'quote_customer_user_id', true ) ), $post_id );
 	}
 }
