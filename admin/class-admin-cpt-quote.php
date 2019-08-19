@@ -118,7 +118,7 @@ class Admin_CPT_Quote {
 			return $post_ID;
 		}
 
-		$old = get_post_meta( $post_ID, 'quote_line_items', true );
+		$old = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $post_ID );
 		$new = $_POST['quote_line_items'];
 
 		if ( $new && $new !== $old ) {
@@ -245,21 +245,10 @@ class Admin_CPT_Quote {
 	/**
 	 * Build custom field meta box
 	 *
-	 * @param post $post The post object.
+	 * @param WP_Post $post The post object.
 	 */
 	public function meta_box_quote_items( $post ) {
-
-		$columns = apply_filters(
-			'quote_builder_quote_fields',
-			array(
-				'description' => __( 'Description', 'quote-builder' ),
-				'sku'         => __( 'SKU', 'quote-builder' ),
-				'unit'        => __( 'Unit', 'quote-builder' ),
-				'quantity'    => __( 'Quantity', 'quote-builder' ),
-				'cost'        => __( 'Cost', 'quote-builder' ),
-				'total'       => __( 'Total', 'quote-builder' ),
-			)
-		);
+		$columns = Quote_Builder_CPT_Quote::get_instance()->get_columns();
 
 		include 'partials/quote-items.php';
 	}

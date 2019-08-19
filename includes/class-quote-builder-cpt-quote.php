@@ -39,8 +39,6 @@ class Quote_Builder_CPT_Quote {
 		return static::$instance;
 	}
 
-
-
 	/**
 	 * Register the quote post type.
 	 *
@@ -113,4 +111,35 @@ class Quote_Builder_CPT_Quote {
 		);
 	}
 
+	/**
+	 * Get list of quote item columns.
+	 *
+	 * @return array|mixed
+	 */
+	public function get_columns() {
+		$columns = apply_filters(
+			'quote_builder_quote_fields',
+			array(
+				'description' => __( 'Description', 'quote-builder' ),
+				'sku'         => __( 'SKU', 'quote-builder' ),
+				'unit'        => __( 'Unit', 'quote-builder' ),
+				'quantity'    => __( 'Quantity', 'quote-builder' ),
+				'cost'        => __( 'Cost', 'quote-builder' ),
+				'total'       => __( 'Total', 'quote-builder' ),
+			)
+		);
+		return $columns;
+	}
+
+	/**
+	 * Get the quote line items.
+	 *
+	 * @param int $post_id ID of the custom post type quote.
+	 *
+	 * @return mixed
+	 */
+	public function get_line_items( $post_id ) {
+		return apply_filters( 'quote_builder_quote_items', get_post_meta( $post_id, 'quote_line_items', true ), $post_id );
+
+	}
 }

@@ -59,7 +59,7 @@ function quote_lines( $columns, $content = array(), $line_number = null ) {
 	<?php
 }
 
-$quote_lines = get_post_meta( $GLOBALS['post_ID'], 'quote_line_items', true );
+$quote_lines = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $GLOBALS['post_ID'] );
 ?>
 
 <?php wp_nonce_field( 'quote-items', '_wpnonce_quote_items' ); ?>

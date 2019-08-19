@@ -33,18 +33,30 @@ p[data-placeholder]:not(:focus):not([data-placeholder-content]):before {
 }
 
 .qb-logo {
-	right: 0;
-	top: 0;
-	position: absolute;
+	float: right;
+}
+
+table.qb-line-items {
+	width: 100%;
 }
 
 img.qb-logo {
+	float: left;
 	max-height: 150px;
 	max-width: 150px;
 }
 
 .qb-heading {
 	left: 0;
+	float: left;
+}
+
+.qb-details-left {
+	float: left;
+}
+
+.clear-left {
+	clear: left;
 }
 
 @media print {

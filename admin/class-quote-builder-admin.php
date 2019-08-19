@@ -204,34 +204,10 @@ class Quote_Builder_Admin {
 	}
 
 	/**
-	 * Replace Add Quote URL in admin pages.
-	 *
-	 * @param string $url  Original new post type url.
-	 * @param string $path Requested path.
-	 *
-	 * @return string|void
-	 *
-	 * @since    1.0.0
-	 */
-	public function admin_new_quote_url( $url, $path ) {
-		//if ( 'post-new.php?post_type=quote' === $path ) {
-		//	return admin_url( 'edit.php?post_type=quote&page=new_quote' );
-		//}
-
-		return $url;
-	}
-
-	/**
 	 * Redirect any attempts to create a new quote post type to our new page.
 	 */
 	public function admin_init() {
 		Quote_Builder_Settings::get_instance()->add_settings_fields();
-		/*		global $pagenow;
-
-				if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && 'quote' === $_GET['post_type'] ) { // phpcs:ignore WordPress.Security.NonceVerification
-					wp_safe_redirect( admin_url( 'post-new.php?post_type=quote' ), '301' );
-					exit;
-				}*/
 	}
 
 }

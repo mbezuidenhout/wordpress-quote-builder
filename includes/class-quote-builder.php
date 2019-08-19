@@ -185,7 +185,6 @@ class Quote_Builder {
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-			$this->loader->add_filter( 'admin_url', $plugin_admin, 'admin_new_quote_url', 10, 2 );
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
 			$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init' );
 			$this->loader->add_action( 'quote_builder_print', $plugin_admin, 'print_quote' );
