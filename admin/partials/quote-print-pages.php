@@ -1,6 +1,9 @@
 <?php
 $columns  = Quote_Builder_CPT_Quote::get_instance()->get_columns();
-$customer = get_userdata( Quote_Builder_CPT_Quote::get_instance()->get_customer_user_id( $variables['post']->ID ) );
+/** @var WP_Post $post */
+$post     =  $variables['post'];
+$quote    = new Quote_Builder\Quote( $post );
+$customer = get_userdata( $quote->get_customer_user_id( ) );
 
 function quote_lines( $columns, $content = array(), $line_number = null ) {
 	?>
@@ -29,9 +32,18 @@ function quote_lines( $columns, $content = array(), $line_number = null ) {
         <div class="qb-logo"><img src="<?php echo $variables['logo']; ?>" class="qb-logo"></div>
         <div class="qb-heading"><h1><?php echo __( 'Quotation', 'quote-builder' ) ?></h1></div>
         <div class="clear-left"></div>
-        <div class="qb-details-left">
-            <div><span><?php echo __( 'Quote number:', 'quote-builder' ); ?></span><span><?php echo $variables['post']->post_title ?></span></div>
-            <div><span><?php echo __( 'Company:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'company' ); ?></span></div>
+        <div class="qb-quote-details">
+            <div><span><?php echo __( 'Quote number:', 'quote-builder' ); ?></span><span><?php echo $post->post_title ?></span></div>
+            <div><span><?php echo __( 'Date:', 'quote-builder' ); ?></span><span><?php echo get_post_modified_time( get_option( 'date_format' ), false, $post ) ?></span></div>
+        </div>
+        <div class="clear"></div>
+        <div class="qb-from-details">
+            <h4 class="qb-quote-from-title"><?php echo __('From') ?></h4>
+            <div><h1><?php echo get_bloginfo( 'name' ); ?></h1></div>
+        </div>
+        <div class="qb-to-details">
+            <h4 class="qb-quote-to-title"><?php echo __('To') ?></h4>
+            <div><h1><?php echo $customer->get( 'company' ); ?></h1></div>
             <div><span><?php echo __( 'Attention:', 'quote-builder' ); ?></span><span><?php echo $customer->first_name . ' ' . $customer->last_name; ?></span></div>
             <div><span><?php echo __( 'Phone number:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'work_phone' ); ?></span></div>
             <div><span><?php echo __( 'Fax number:', 'quote-builder' ); ?></span><span><?php echo $customer->get( 'work_phone' ); ?></span></div>
@@ -54,7 +66,7 @@ function quote_lines( $columns, $content = array(), $line_number = null ) {
                 </thead>
                 <tbody>
 <?php
-$quote_line_items = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $variables['post']->ID );
+$quote_line_items = $quote->get_line_items( );
 
 foreach ( $quote_line_items as $quote_line_item ):
     ?>
@@ -73,6 +85,15 @@ endforeach;
                 </tbody>
             </table>
         </div>
+        <div class="qb-quote-footer">
+            <div class="qb-quote-acceptance">
+                <span><?php echo __( 'Name:' ); ?></span>
+            </div>
+            <div class="qb-quote-totals">
+                <span><?php echo __( 'Total due', 'quote-builder' ); ?></span><span><?php echo $quote->get_total(); ?></span>
+            </div>
+        </div>
+        <div class="clear"></div>
     </page>
 </div>
 <div class="clear"></div>

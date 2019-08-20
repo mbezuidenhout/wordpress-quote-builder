@@ -51,12 +51,66 @@ img.qb-logo {
 	float: left;
 }
 
-.qb-details-left {
+.qb-quote-details {
+	float: left;
+}
+
+.qb-to-details {
+	float: right;
+	width: 50%;
+}
+
+.qb-from-details {
+	float: left;
+	width: 50%;
+}
+
+.qb-quote-from-title, .qb-quote-to-title {
+	text-transform: uppercase;
+}
+
+.qb-quote-footer:before, .qb-quote-footer:after {
+	clear: both;
+}
+
+.qb-quote-header {
+	position: absolute;
+	top: 1cm;
+	width: 100%;
+}
+
+.qb-quote-footer {
+	position: absolute;
+	bottom: 1cm;
+	width: 100%;
+}
+
+.qb-quote-footer .qb-quote-totals {
+	float: right;
+}
+
+.qb-quote-footer .qb-quote-acceptance {
 	float: left;
 }
 
 .clear-left {
 	clear: left;
+}
+
+th .revisions-grey-bubble:before {
+	content: "\f105";
+	font: normal 20px/.5 dashicons;
+	speak: none;
+	display: inline-block;
+	padding: 0;
+	top: 4px;
+	left: -4px;
+	position: relative;
+	vertical-align: top;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-decoration: none!important;
+	color: #444;
 }
 
 @media print {

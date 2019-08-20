@@ -5,7 +5,8 @@
 		<option><?php echo __( 'None'); ?></option>
 		<?php
 		$users            = get_users();
-		$customer_user_id = Quote_Builder_CPT_Quote::get_instance()->get_customer_user_id( $post->ID );
+		$quote            = new \Quote_Builder\Quote( $post );
+		$customer_user_id = $quote->get_customer_user_id( );
 		foreach( $users as $user ) :
 			$display_name = empty( $user->display_name ) ? $user->first_name . ' ' . $user->last_name : $user->display_name;
 			?>

@@ -117,6 +117,11 @@ class Quote_Builder {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-cpt-quote.php';
 
 		/**
+		 * Methods for the custom post type, quote.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote.php';
+
+		/**
 		 * The class responsible for providing WordPress Settings API functionality.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-quote-builder-settings-api.php';
@@ -202,6 +207,7 @@ class Quote_Builder {
 			$this->loader->add_action( "save_post_{$post_type}", $cpt_quote, 'save_quote_customer', 10, 3 );
 			$this->loader->add_filter( "manage_{$post_type}_posts_columns", $cpt_quote, 'quotes_columns' );
 			$this->loader->add_filter( 'manage_edit-quote_sortable_columns', $cpt_quote, 'quotes_sortable_columns' );
+			$this->loader->add_action( "manage_{$post_type}_posts_custom_column", $cpt_quote, 'quote_columns_data', 10, 2 );
 
 			$this->run();
 		}

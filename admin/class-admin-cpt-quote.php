@@ -80,6 +80,15 @@ class Admin_CPT_Quote {
 		$posts_columns          = array_slice( $posts_columns, 0, 2, true ) +
 								array( 'customer' => _x( 'Customer', 'column name', 'quote-builder' ) ) +
 								array_slice( $posts_columns, 2, null, true );
+
+		$revision_column_heading = '<span class="vers revisions-grey-bubble" title="' . __( 'Revisions', 'quote-builder' ) . '">' .
+									'<span class="screen-reader-text">' . __( 'Revisions', 'quote-builder' ) .
+									'</span>' .
+									'</span>';
+
+		$posts_columns = array_slice( $posts_columns, 0, 4, true ) +
+						array( 'revisions' => $revision_column_heading ) +
+						array_slice( $posts_columns, 4, null, true );
 		return $posts_columns;
 	}
 
@@ -118,7 +127,9 @@ class Admin_CPT_Quote {
 			return $post_ID;
 		}
 
-		$old = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $post_ID );
+		$quote = new \Quote_Builder\Quote( $post_ID );
+
+		$old = $quote->get_line_items( );
 		$new = $_POST['quote_line_items'];
 
 		if ( $new && $new !== $old ) {
@@ -141,7 +152,9 @@ class Admin_CPT_Quote {
 			return $post_ID;
 		}
 
-		$old = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $post_ID );
+		$quote = new \Quote_Builder\Quote( $post_ID );
+
+		$old = $quote->get_customer_user_id( );
 		$new = wp_unslash( $_POST['qb_customer_id'] );
 
 		if ( $new && $new !== $old ) {
@@ -159,7 +172,8 @@ class Admin_CPT_Quote {
 		remove_meta_box( 'commentstatusdiv', 'quote', 'normal' );
 		remove_meta_box( 'slugdiv', 'quote', 'normal' );
 		add_meta_box( 'quoteitemsdiv', __( 'Line items', 'quote-builder' ), array( $this, 'meta_box_quote_items' ), 'quote', 'normal', 'high' );
-		add_meta_box( 'quotecustomerdev', __( 'Customer', 'quote-builder' ), array( $this, 'meta_box_quote_customer' ), 'quote', 'side', 'high' );
+		add_meta_box( 'quotecustomerdiv', __( 'Customer', 'quote-builder' ), array( $this, 'meta_box_quote_customer' ), 'quote', 'side', 'high' );
+		add_meta_box( 'quotenotesdiv', __( 'Notes', 'quote-builder' ), array( $this, 'meta_box_quote_notes' ), 'quote', 'normal' );
 	}
 
 	/**
@@ -277,6 +291,11 @@ class Admin_CPT_Quote {
 		include 'partials/quote-items.php';
 	}
 
+	public function meta_box_quote_notes( $post ) {
+		$quote = new \Quote_Builder\Quote( $post );
+		wp_editor( $quote->get_notes(), 'quote-notes' );
+	}
+
 	/**
 	 * Build the customer field meta box.
 	 *
@@ -301,6 +320,28 @@ class Admin_CPT_Quote {
 			'work_phone' => __( 'Work phone', 'quote-builder' ),
 		);
 		return array_merge( $methods, $new_methods );
+	}
+
+	/**
+	 * Fill quote post type columns with data.
+	 *
+	 * @param string $column_name The name of the column to display.
+	 * @param int    $post_id     The current post ID.
+	 */
+	public function quote_columns_data( $column_name, $post_id ) {
+		$post     = get_post( $post_id );
+		$quote    = new \Quote_Builder\Quote( $post );
+		$customer = get_userdata( $quote->get_customer_user_id() );
+		switch ( $column_name ) {
+			case 'customer':
+				if ( ! empty( $customer ) ) {
+					if ( ! empty( $customer->get( 'company' ) ) ) {
+						echo esc_html( ' ' . $customer->get( 'company' ) . ' - ' );
+					}
+					echo esc_html( '(' . $customer->first_name . ' ' . $customer->last_name . ')' );
+				}
+				break;
+		}
 	}
 
 }

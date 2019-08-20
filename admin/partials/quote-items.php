@@ -19,6 +19,9 @@
  * @param array $columns An associative array of columns.
  * @param int   $count   Call count.
  */
+
+$quote = new \Quote_Builder\Quote( $GLOBALS['post_ID'] );
+
 function quote_lines_header_and_footer( $columns, $count = 0 ) {
 	?>
 	<tr>
@@ -59,7 +62,7 @@ function quote_lines( $columns, $content = array(), $line_number = null ) {
 	<?php
 }
 
-$quote_lines = Quote_Builder_CPT_Quote::get_instance()->get_line_items( $GLOBALS['post_ID'] );
+$quote_lines = $quote->get_line_items( );
 ?>
 
 <?php wp_nonce_field( 'quote-items', '_wpnonce_quote_items' ); ?>
